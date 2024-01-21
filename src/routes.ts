@@ -8,10 +8,17 @@ export const publicRoutes = ["/", "/auth/new-verification"];
 
 /**
  * An array of routes that are used for authentication.
- * those routes will redirect logged-in users to /settings
+ * those routes will redirect logged-in users to /settings.
+ * only logged-out users access those routes.
  * @type {sting[]}
  */
-export const authRoutes = ["/auth/login", "/auth/register", "/auth/error"];
+export const authRoutes = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/error",
+  "/auth/reset",
+  "/auth/new-password",
+];
 
 /**
  * The prefix for API authentication routes

@@ -7,7 +7,7 @@ const SettingsPage = async (props: Props) => {
   const session = await auth();
 
   return (
-    <div>
+    <div className="h-full flex  flex-col justify-evenly">
       {JSON.stringify(session, null, 4)}
       <form
         action={async () => {
@@ -15,6 +15,7 @@ const SettingsPage = async (props: Props) => {
 
           await signOut();
         }}
+        className="flex justify-center  "
       >
         <Button variant={"outline"} type="submit">
           Sign Out

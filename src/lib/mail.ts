@@ -34,3 +34,40 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     }
   });
 };
+
+export const sendPasswordResetEmail = async (email: string, token: string) => {
+  const resetLink = `http://localhost:3000/auth/new-password?token=${token}`;
+
+  // send email
+  const mailOptions = {
+    from: process.env.GOOGLE_USER_EMAIL,
+    to: email,
+    subject: "Reset your password",
+    html: `<p>Click <a href="${resetLink}">here</a> to reset your password.</p>`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error); // if anything goes wrong an error will show up in your terminal.
+    } else {
+      console.log(`Message sent: ${info.messageId}`); // if it's a success, a confirmation will show up in your terminal.
+    }
+  });
+};
+
+export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
+  const mailOptions = {
+    from: process.env.GOOGLE_USER_EMAIL,
+    to: email,
+    subject: "2FA Code",
+    html: `<p>Your 2FA code: ${token}.</p>`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error); // if anything goes wrong an error will show up in your terminal.
+    } else {
+      console.log(`Message sent: ${info.messageId}`); // if it's a success, a confirmation will show up in your terminal.
+    }
+  });
+};

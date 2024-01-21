@@ -13,85 +13,53 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import FormError from "../share/FormError";
 import FormSuccess from "../share/FormSuccess";
-import { RegisterSchema } from "@/schemas";
-import { register } from "@/actions/register";
+import { reset } from "@/actions/reset";
+import LoadingSpinner from "../share/LoadingSpinner";
+import { NewPasswordSchema } from "@/schemas";
+import { useSearchParams } from "next/navigation";
+import { newPassword } from "@/actions/new-password";
 
 type Props = {};
 
-const RegisterForm = (props: Props) => {
+const NewPasswordForm = (props: Props) => {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
   const [errorMessage, setErrorMessage] = useState<string | undefined>("");
   const [successMessage, setSuccessMessage] = useState<string | undefined>("");
 
   const [isPending, startTransition] = useTransition();
-
-  const form = useForm<z.infer<typeof RegisterSchema>>({
-    resolver: zodResolver(RegisterSchema),
-    defaultValues: { email: "", password: "", name: "" },
+  const form = useForm<z.infer<typeof NewPasswordSchema>>({
+    resolver: zodResolver(NewPasswordSchema),
+    defaultValues: { password: "" },
   });
 
-  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+  const onSubmit = (values: z.infer<typeof NewPasswordSchema>) => {
     // reset states
     setErrorMessage("");
     setSuccessMessage("");
 
+    // console.log(values);
     startTransition(() => {
-      register(values).then((data) => {
+      newPassword(values, token).then((data) => {
         if (data?.error) setErrorMessage(data.error);
         if (data?.success) setSuccessMessage(data.success);
       });
     });
   };
+
   return (
     <CardWrapper
-      headerLabel="Create an account"
-      backButtonLabel="Already have an account?"
+      headerLabel="Enter a new password"
+      backButtonLabel="Back to login"
       backButtonHref="/auth/login"
-      showSocial
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Johs Doe"
-                      type="text"
-                      disabled={isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="johs.doe@example.com"
-                      type="email"
-                      disabled={isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="password"
@@ -113,8 +81,17 @@ const RegisterForm = (props: Props) => {
           </div>
           <FormError message={errorMessage} />
           <FormSuccess message={successMessage} />
-          <Button type="submit" className="w-full" disabled={isPending}>
-            Register
+          <Button
+            type="submit"
+            className="w-full relative"
+            disabled={isPending}
+          >
+            {isPending && (
+              <span className="absolute top-1 left-20">
+                <LoadingSpinner className="w-8 h-8" />
+              </span>
+            )}
+            Reset password
           </Button>
         </form>
       </Form>
@@ -122,4 +99,4 @@ const RegisterForm = (props: Props) => {
   );
 };
 
-export default RegisterForm;
+export default NewPasswordForm;
