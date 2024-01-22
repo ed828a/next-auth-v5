@@ -16,8 +16,8 @@ export default function Home() {
         </h1>
         <p className="text-white text-lg">A simple authentication server</p>
         <div className="">
-          <LoginButton>
-            <Button variant={"secondary"} size={"lg"}>
+          <LoginButton mode="modal" asChild>
+            <Button variant="secondary" size="lg">
               Sign in
             </Button>
           </LoginButton>

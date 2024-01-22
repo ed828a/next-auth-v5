@@ -6,20 +6,25 @@ import { db } from "@/lib/db";
 import { getUserById } from "./data/user";
 import { UserRole } from "@prisma/client";
 import { getTwoFactorConfirmationByUserId } from "./data/two-factor-confirmation";
+import { getAccountByUerId } from "./data/account";
 
-declare module "next-auth" {
-  interface User {
-    role: UserRole;
-  }
+/**
+ * move below into next-auth.d.ts
+ */
+// declare module "next-auth" {
+//   interface User {
+//     role: UserRole;
+//   }
 
-  interface Session {}
-}
+//   interface Session {}
+// }
 
 export const {
   handlers: { GET, POST },
   auth,
   signIn,
   signOut,
+  unstable_update,
 } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(db), // prisma-adapter is non-edge supported adapter.
@@ -82,7 +87,13 @@ export const {
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
 
+      const existingAccount = await getAccountByUerId(existingUser.id);
+
+      token.isOAuth = !!existingAccount;
+      token.name = existingUser.name;
+      token.email = existingUser.email;
       token.role = existingUser.role;
+      token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
 
       return token;
     },
@@ -97,6 +108,12 @@ export const {
 
       if (token.role && session.user) {
         session.user.role = token.role;
+      }
+      if (session.user) {
+        session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.isOAuth = token.isOAuth;
       }
 
       return session;

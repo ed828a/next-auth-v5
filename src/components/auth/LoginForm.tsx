@@ -27,6 +27,7 @@ type Props = {};
 
 const LoginForm = (props: Props) => {
   const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const urlError =
     searchParams.get("error") === "OAuthAccountNotLinked"
       ? "Email already in use with different provider."
@@ -49,7 +50,7 @@ const LoginForm = (props: Props) => {
     setSuccessMessage("");
 
     startTransition(() => {
-      login(values)
+      login(values, callbackUrl)
         .then((data) => {
           if (data?.error) {
             form.reset();
@@ -91,6 +92,7 @@ const LoginForm = (props: Props) => {
                         placeholder="654321"
                         type="text"
                         disabled={isPending}
+                        autoComplete="off"
                       />
                     </FormControl>
                     <FormMessage />
