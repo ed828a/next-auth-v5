@@ -52,7 +52,7 @@ export const login = async (
       }
 
       if (twoFactorToken.token !== code) {
-        return { error: "Invalid code!" };
+        return { error: "Code mismatched!" };
       }
 
       const hasExpired = new Date(twoFactorToken.expires) < new Date();
@@ -65,6 +65,7 @@ export const login = async (
 
       // when 2FA is valid, still remove twoFactorToken
       await db.twoFactorToken.delete({ where: { id: twoFactorToken.id } });
+
       const existingConfirmation = await getTwoFactorConfirmationByUserId(
         existingUser.id
       );

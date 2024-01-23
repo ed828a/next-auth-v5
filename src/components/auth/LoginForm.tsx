@@ -53,7 +53,9 @@ const LoginForm = (props: Props) => {
       login(values, callbackUrl)
         .then((data) => {
           if (data?.error) {
-            form.reset();
+            if (data.error !== "Code mismatched!") {
+              form.reset();
+            }
             setErrorMessage(data.error);
           }
           if (data?.success) {
@@ -79,7 +81,7 @@ const LoginForm = (props: Props) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
-            {showTwoFactor ? (
+            {showTwoFactor && (
               <FormField
                 control={form.control}
                 name="code"
@@ -99,7 +101,8 @@ const LoginForm = (props: Props) => {
                   </FormItem>
                 )}
               />
-            ) : (
+            )}
+            {!showTwoFactor && (
               <>
                 <FormField
                   control={form.control}
