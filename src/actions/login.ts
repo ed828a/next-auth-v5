@@ -28,6 +28,7 @@ export const login = async (
   const { email, password, code } = validatedFields.data;
 
   const existingUser = await getUserByEmail(email);
+
   if (!existingUser || !existingUser.email || !existingUser.password) {
     return { error: "User with this email doesn't exist!" };
   }
@@ -46,7 +47,11 @@ export const login = async (
   if (existingUser.isTwoFactorEnabled && existingUser.email) {
     if (code) {
       const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email);
-      if (!twoFactorToken || twoFactorToken.token !== code) {
+      if (!twoFactorToken) {
+        return { error: "Invalid code!" };
+      }
+
+      if (twoFactorToken.token !== code) {
         return { error: "Invalid code!" };
       }
 
@@ -68,13 +73,13 @@ export const login = async (
         await db.twoFactorConfirmation.delete({
           where: { id: existingConfirmation.id },
         });
-      } else {
-        await db.twoFactorConfirmation.create({
-          data: {
-            userId: existingUser.id,
-          },
-        });
       }
+
+      await db.twoFactorConfirmation.create({
+        data: {
+          userId: existingUser.id,
+        },
+      });
     } else {
       const twoFactorToken = await generateTwoFactorToken(existingUser.email);
       await sendTwoFactorTokenEmail(existingUser.email, twoFactorToken.token);

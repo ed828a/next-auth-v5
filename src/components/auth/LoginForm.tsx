@@ -113,6 +113,7 @@ const LoginForm = (props: Props) => {
                           placeholder="johs.doe@example.com"
                           type="email"
                           disabled={isPending}
+                          autoComplete="off"
                         />
                       </FormControl>
                       <FormMessage />
@@ -131,6 +132,7 @@ const LoginForm = (props: Props) => {
                           placeholder="*********"
                           type="password"
                           disabled={isPending}
+                          autoComplete="off"
                         />
                       </FormControl>
                       <Button

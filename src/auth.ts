@@ -35,6 +35,7 @@ export const {
   },
   events: {
     async linkAccount({ user }) {
+      // Sent when an account in a given provider is linked to a user in our user database.
       console.log("linkAccount event called");
       await db.user.update({
         where: { id: user.id },
