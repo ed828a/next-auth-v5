@@ -19,13 +19,14 @@ import { Button } from "../ui/button";
 import FormError from "../share/FormError";
 import FormSuccess from "../share/FormSuccess";
 import { login } from "@/actions/login";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import LoadingSpinner from "../share/LoadingSpinner";
 
 type Props = {};
 
 const LoginForm = (props: Props) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
   const urlError =
@@ -42,6 +43,11 @@ const LoginForm = (props: Props) => {
     resolver: zodResolver(LoginSchema),
     defaultValues: { email: "", password: "" },
   });
+
+  const handleStartover = () => {
+    form.reset();
+    router.replace("/auth/login");
+  };
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     console.log("onSubmit values", values, "isPending=", isPending);
@@ -98,6 +104,12 @@ const LoginForm = (props: Props) => {
                       />
                     </FormControl>
                     <FormMessage />
+                    <p
+                      onClick={() => handleStartover()}
+                      className="cursor-pointer text-gray-500 text-sm"
+                    >
+                      lost the code? start over login
+                    </p>
                   </FormItem>
                 )}
               />
